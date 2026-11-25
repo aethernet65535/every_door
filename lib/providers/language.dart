@@ -24,17 +24,20 @@ class LanguageController extends Notifier<Locale?> {
 
   @override
   Locale? build() {
-    ref.read(sharedPrefsProvider).whenData((prefs) {
-      final l = prefs.getStringList(kLocaleKey);
-      if (l != null) {
+    _restore();
+    return null;
+  }
+
+  Future<void> _restore() async {
+    final prefs = await ref.read(sharedPrefsProvider.future);
+    final l = prefs.getStringList(kLocaleKey);
+    if (l != null && state == null) {
         state = Locale.fromSubtags(
           languageCode: l[0],
           countryCode: l[1] == kNull ? null : l[1],
           scriptCode: l[2] == kNull ? null : l[2],
         );
-      }
-    });
-    return null;
+    }
   }
 
   Future<void> set(Locale? newValue) async {
